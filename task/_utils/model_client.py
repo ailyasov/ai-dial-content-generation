@@ -4,7 +4,6 @@ from typing import Any
 import requests
 
 from task._models.message import Message
-from task._utils.request import print_request
 
 
 class DialModelClient:
@@ -15,28 +14,25 @@ class DialModelClient:
         if not api_key or api_key.strip() == "":
             raise ValueError("API key cannot be null or empty")
 
-        self._endpoint = endpoint.format(
-            model=deployment_name
-        )
+        self._endpoint = endpoint.format(model=deployment_name)
         self._api_key = api_key
 
-
-    def get_completion(self, messages: list[Message], custom_fields: dict[str, Any] | None = None, **kwargs) -> Message:
-        headers = {
-            "api-key": self._api_key,
-            "Content-Type": "application/json"
-        }
+    def get_completion(
+        self,
+        messages: list[Message],
+        custom_fields: dict[str, Any] | None = None,
+        **kwargs,
+    ) -> Message:
+        headers = {"api-key": self._api_key, "Content-Type": "application/json"}
 
         request_data: dict[str, Any] = {
             "messages": [msg.to_dict() for msg in messages],
-            **kwargs
+            **kwargs,
         }
         if custom_fields:
-            request_data["custom_fields"] = {
-                "configuration": {**custom_fields}
-            }
+            request_data["custom_fields"] = {"configuration": {**custom_fields}}
 
-        print_request(endpoint=self._endpoint, request_data=request_data, headers=headers)
+        # print_request(endpoint=self._endpoint, request_data=request_data, headers=headers)
 
         response = requests.post(url=self._endpoint, headers=headers, json=request_data)
 
