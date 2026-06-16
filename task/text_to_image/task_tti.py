@@ -36,7 +36,7 @@ class Quality:
     """
 
     standard: str = "standard"
-    hd: str = "hd"
+    hd: str = "high"
 
 
 async def _save_images(attachments: list[Attachment]):
@@ -65,13 +65,15 @@ def start() -> None:
 
     dalle_client = DialModelClient(
         endpoint=DIAL_CHAT_COMPLETIONS_ENDPOINT,
-        deployment_name="gemini-2.5-flash-image",
+        deployment_name="gpt-image-1.5-2025-12-16",
         api_key=API_KEY,
     )
 
     user_input = "Sunny day on Bali"
+    custom_fields = {"size": Size.square, "quality": Quality.hd}
     ai_message = dalle_client.get_completion(
-        messages=[Message(role=Role.USER, content=user_input)]
+        messages=[Message(role=Role.USER, content=user_input)],
+        custom_fields=custom_fields,
     )
 
     if custom_content := ai_message.custom_content:
